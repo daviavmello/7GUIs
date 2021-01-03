@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<head>
+    <title>7 GUI's</title>
+    <style>
+        *,
+        html {
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: rgb(236, 152, 42);
+        }
+
+        .center {
+            width: 100%;
+            height: 50%;
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: "Trebuchet MS", Helvetica, sans-serif;
+            text-align: center;
+        }
+
+        p {
+            font-size: 64px;
+        }
+
+        #celsius,
+        #farenheit,
+        #flight-dropdown,
+        #start-date,
+        #return-date {
+            padding: 2rem 4rem;
+            border-radius: 1.5rem;
+            font-size: 2rem;
+            margin: 1rem 2rem;
+        }
+
+        #counter-button,
+        #book-button {
+            padding: 2rem 4rem;
+            border-radius: 1.5rem;
+            font-size: 2rem;
+            margin: 1rem 2rem;
+            cursor: pointer;
+            background-color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="center">
+
+        <select id="flight-dropdown">
+            <option id="one-way-option">one-way flight</option>
+            <option id="return-option">round-trip flight</option>
+        </select>
+        <br>
+        <input type="date" placeholder="dd-mm-yyyy" id="start-date"></input>
+        <br>
+        <input type="date" placeholder="dd-mm-yyyy" id="return-date"></input>
+        <br>
+        <button disabled id="book-button">Book</button>
+
+    </div>
+
+    <script>
+        // Task 3 = Flight Booker
+
+        let startDate = document.getElementById("start-date");
+        let returnDate = document.getElementById("return-date");
+        let selectMenu = document.getElementById("flight-dropdown");
+        let button = document.getElementById("book-button");
+
+        let oneWay = document.getElementById("one-way-option");
+        let roundTrip = document.getElementById("return-option");
+
+        window.onload = flightSelection();
+
+        selectMenu.addEventListener("input", flightSelection);
+
+        function flightSelection() {
+            if (selectMenu.value == oneWay.value) { returnDate.disabled = true; returnDate.value = ""; } else returnDate.disabled = false;
+            if (selectMenu.value == roundTrip.value && returnDate.value === "") return button.disabled = true;
+        }
+            
+            startDate.addEventListener("input", handleStartDate);
+
+        function handleStartDate() {
+            let startYear = startDate.value.substring(0, 4);
+            let startMonth = startDate.value.substring(5, 7);
+            let startDay = startDate.value.substring(8, 11);
+
+            let returnYear = returnDate.value.substring(0, 4);
+            let returnMonth = returnDate.value.substring(5, 7);
+            let returnDay = returnDate.value.substring(8, 11)
+
+            startDate.value != "" ? button.disabled = false : button.disabled = true;
+
+            if(selectMenu.value == roundTrip.value ) {
+            if (returnDate.value === "" || startYear > returnYear || startYear === returnYear && startMonth > returnMonth || startYear === returnYear && startMonth === returnMonth && startDay > returnDay) return button.disabled = true;
+            else return button.disabled = false;
+            }
+        }
+
+            returnDate.addEventListener("input", dateValidation);
+
+        function dateValidation() {
+            let startYear = startDate.value.substring(0, 4);
+            let startMonth = startDate.value.substring(5, 7);
+            let startDay = startDate.value.substring(8, 11);
+
+            let returnYear = returnDate.value.substring(0, 4);
+            let returnMonth = returnDate.value.substring(5, 7);
+            let returnDay = returnDate.value.substring(8, 11)
+            
+            console.log(startDate.value.substring(8, 11));
+            console.log(returnDay);
+
+            if(selectMenu.value == roundTrip.value ) {
+            if (returnDate.value === "" || startYear > returnYear || startYear === returnYear && startMonth > returnMonth || startYear === returnYear && startMonth === returnMonth && startDay > returnDay) return button.disabled = true;
+            else return button.disabled = false;
+            }
+        }
+        
+        button.addEventListener("click", buttonSubmit);
+
+        function buttonSubmit() {
+            alert("Your " + selectMenu.value + " has been booked for:" + "\n" + "Start date: " + startDate.value + ((!returnDate.disabled) ? "\n" + "Return date: " + returnDate.value : ""));
+        }
+
+    </script>
+</body>
+
+</html>

@@ -59,29 +59,40 @@
             cursor: pointer;
             background-color: white;
         }
-
-        #pages a {
-            text-decoration: none;
-            color: white;
-            font-size: 2rem;
-        }
     </style>
 </head>
 
 <body>
     <div class="center">
-       <div id ="pages"> 
-        <a id="counter" href="counter.html">Counter</a>
-        <br>
-        <a href="temperatureconverter.html">Temperature Converter</a>
-        <br>
-        <a href="flightbooker.html">Flight Booker</a>
-        <br>
-        <a href="timer.html">Timer</a>
-       </div>
+
+        <p>Enter Temperature: </p>
+        <input id="celsius"></input> <p>Celsius</p>
+        <input id="farenheit"></input> <p>Farenheit</p>
+
     </div>
 
-    <script> </script>
+    <script>
+
+
+        // Task 2 = Temperature Converter
+
+        let celsius = document.getElementById("celsius");
+        let farenheit = document.getElementById("farenheit");
+
+        celsius.addEventListener("input", celsiusConverter);
+        farenheit.addEventListener("input", farenheitConverter);
+
+        function celsiusConverter() {
+            let cToF = (celsius.value) * (9/5) + 32;
+            farenheit.value = cToF;
+        }
+
+        function farenheitConverter() {
+            let fToC = ((farenheit.value - 32) * (5/9));
+            celsius.value = fToC;
+        }
+
+    </script>
 </body>
 
 </html>

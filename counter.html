@@ -59,29 +59,29 @@
             cursor: pointer;
             background-color: white;
         }
-
-        #pages a {
-            text-decoration: none;
-            color: white;
-            font-size: 2rem;
-        }
     </style>
 </head>
 
 <body>
     <div class="center">
-       <div id ="pages"> 
-        <a id="counter" href="counter.html">Counter</a>
-        <br>
-        <a href="temperatureconverter.html">Temperature Converter</a>
-        <br>
-        <a href="flightbooker.html">Flight Booker</a>
-        <br>
-        <a href="timer.html">Timer</a>
-       </div>
+        <p id="counter">0</p>
+        <button id="counter-button">Button</button>
+
     </div>
 
-    <script> </script>
+    <script>
+        // Task 1 = Counter
+
+        let buttonCounter = document.getElementById("counter-button");
+        let counter = document.getElementById("counter");
+
+        buttonCounter.addEventListener("click", handleClick);
+
+        function handleClick() {
+            counter.innerHTML++;
+        }
+
+    </script>
 </body>
 
 </html>
