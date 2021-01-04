@@ -35,10 +35,6 @@
             text-align: center;
         }
 
-        p {
-            font-size: 64px;
-        }
-
         #celsius,
         #farenheit,
         #flight-dropdown,
@@ -50,7 +46,7 @@
             margin: 1rem 2rem;
         }
 
-        #counter-button,
+        #reset-button,
         #book-button {
             padding: 2rem 4rem;
             border-radius: 1.5rem;
@@ -59,20 +55,80 @@
             cursor: pointer;
             background-color: white;
         }
+
+        progress[value] {
+            width: 12rem;
+            height: 2rem;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        progress[value]::-webkit-progress-value {
+            background-color: blue;
+            width: 100%;
+        }
+
+        progress[value]::-webkit-progress-bar {
+            background-color: #f5f5f5;
+            box-shadow: 0 0.05rem 5px rgba(0, 0, 0.2, 0.2) inset;
+        }
     </style>
 </head>
 
 <body>
     <div class="center">
-        <p id="counter">0</p>
-        <button id="counter-button">Button</button>
-
+        <h2>Elapsed time:</h2>
+        <progress value="" max="100" id="progress-bar"></progress>
+        <div id="elapsed-time">0s</div>
+        <h2>Duration:</h2>
+        <input id="slider" type="range" min="0" max="100" value="0" oninput="handleSlider()"></input>
+        <br>
+        <button id="reset-button">Reset</button>
     </div>
 
     <script>
-        // Task 3 = Timer
+        // Task 4 = Timer
 
-        
+        let progressBar = document.getElementById("progress-bar");
+        let timer = progressBar.value * 1000;
+
+        let slider = document.getElementById("slider");
+        let elapsedTime = document.getElementById("elapsed-time");
+        let resetButton = document.getElementById("reset-button");
+
+        slider.addEventListener("drag", handleSlider);
+
+        function handleSlider() {
+            let newSliderValue = slider.value;
+
+            console.log(slider.value);
+            console.log(timer);
+            progressBar.value = slider.value;
+            timer = slider.value * 1000;
+            elapsedTime.innerHTML = `${slider.value}s`;
+
+            let newTimer = setInterval(setTimer, 1000)
+
+            function setTimer() {
+                console.log(timer);
+                if (newSliderValue != slider.value) {
+                    clearInterval(newTimer);
+                }
+                else if (timer == 0) {
+                    clearInterval(newTimer);
+                    slider.value = 0;
+                    alert(`Time is up!`);
+                }
+                else { timer -= 1000; progressBar.value--; elapsedTime.innerHTML = `${timer / 1000}s`; }
+            }
+            resetButton.addEventListener("click", () => {
+                clearInterval(newTimer);
+                slider.value = 0;
+                progressBar.value = 0;
+                elapsedTime.innerHTML = `0s`;
+            })
+        }
+
 
     </script>
 </body>
