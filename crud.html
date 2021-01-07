@@ -35,26 +35,30 @@
             text-align: center;
         }
 
-        p {
-            font-size: 64px;
+        p,
+        label {
+            font-size: 32px;
         }
 
-        #celsius,
-        #farenheit,
-        #flight-dropdown,
-        #start-date,
-        #return-date {
-            padding: 2rem 4rem;
-            border-radius: 1.5rem;
+        input,
+        #names {
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
             font-size: 2rem;
             margin: 1rem 2rem;
         }
 
-        #counter-button,
-        #book-button {
-            padding: 2rem 4rem;
-            border-radius: 1.5rem;
-            font-size: 2rem;
+        #names,
+        form {
+            display: inline-block;
+        }
+
+        #create-button,
+        #update-button,
+        #delete-button {
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-size: 1.5rem;
             margin: 1rem 2rem;
             cursor: pointer;
             background-color: white;
@@ -65,33 +69,151 @@
 <body>
     <div class="center">
 
-        <p>Enter Temperature: </p>
-        <input id="celsius"></input>
-        <p>Celsius</p>
-        <input id="farenheit"></input>
-        <p>Farenheit</p>
-
+        <label>Filter prefix:</label>
+        <input id="filter-prefix" type="text"></input>
+        <br>
+        <div>
+            <select id="names" size="5"></select>
+            <form>
+                <label for="fname">First name:</label><br>
+                <input type="text" id="fname" name="fname"><br>
+                <label for="lname">Last name:</label><br>
+                <input type="text" id="lname" name="lname">
+            </form>
+        </div>
+        <br>
+        <button disabled id="create-button">Create</button>
+        <button disabled id="update-button">Update</button>
+        <button id="delete-button">Delete</button>
     </div>
 
     <script>
 
+        // Task 5 = CRUD
 
-        // Task 2 = Temperature Converter
+        let nameArray = [{ "id": 0, "fname": "Matheus", "lname": "Romildo" }, { "id": 1, "fname": "Asafe", "lname": "Pintainha" }];
 
-        let celsius = document.getElementById("celsius");
-        let farenheit = document.getElementById("farenheit");
+        let nameList = document.getElementById("names")
 
-        celsius.addEventListener("input", celsiusConverter);
-        farenheit.addEventListener("input", farenheitConverter);
+        let filterPrefix = document.getElementById("filter-prefix")
 
-        function celsiusConverter() {
-            let cToF = (celsius.value) * (9 / 5) + 32;
-            farenheit.value = cToF;
+        let fName = document.getElementById("fname")
+        let lName = document.getElementById("lname")
+
+        const createButton = document.getElementById("create-button")
+        const updateButton = document.getElementById("update-button")
+        const deleteButton = document.getElementById("delete-button")
+
+        let userValue = nameList.value
+        let userDiv = document.getElementById(userValue);
+
+        window.onload = () => {
+            buttonDisabled;
+
+            let fullName = nameArray.map(name => `<option id="${name.id}">${name.lname}, ${name.fname}</option>`).join('');
+
+            nameList.innerHTML += fullName
         }
 
-        function farenheitConverter() {
-            let fToC = ((farenheit.value - 32) * (5 / 9));
-            celsius.value = fToC;
+        lName.addEventListener("input", buttonDisabled);
+
+        function buttonDisabled() {
+            if (fName.value == "" || lName.value == "") createButton.disabled = true;
+            else createButton.disabled = false;
+        }
+
+        createButton.addEventListener("click", newUser);
+
+        function newUser() {
+            let newId = nameArray[nameArray.length - 1].id + 1
+
+            nameArray.push({ "id": newId, "fname": fName.value, "lname": lName.value })
+
+            let fullName = `<option id="${newId}">${lName.value}, ${fName.value}</option>`;
+
+            nameList.innerHTML += fullName
+
+            fName.value = "";
+            lName.value = "";
+            createButton.disabled = true;
+
+            console.log("Added to array: ", nameArray);
+        }
+
+        deleteButton.addEventListener("click", deleteUser);
+
+        function deleteUser() {
+            let userValue = nameList.value
+            let fname = userValue.substring(userValue.search(",") + 2);
+            let lname = userValue.substring(0, userValue.search(","));
+
+            let selectedId = nameList.selectedIndex;
+
+            console.log(selectedId);
+            // console.log(nameList[nameList.selectedIndex].id);
+
+            nameArray = nameArray.filter(name => name.id != selectedId && name.fname != fname && name.lname != lname)
+
+            console.log("Deleted from array: ", nameArray);
+
+            nameList.innerHTML = nameArray.map(name => `<option id="${name.id}">${name.lname}, ${name.fname}</option>`).join('');
+        }
+
+        updateButton.addEventListener("click", updateUser)
+
+        function updateUser() {
+            let userValue = nameList.value
+            let userDiv = document.getElementById(userValue);
+            let fname = userValue.substring(userValue.search(",") + 2);
+            let lname = userValue.substring(0, userValue.search(","));
+
+            let selectedId = nameList.selectedIndex;
+
+            nameArray = nameArray.filter(name => name.id != selectedId && name.fname != fname && name.lname != lname)
+
+            let newId = nameArray[nameArray.length - 1].id + 1
+
+            nameArray.push({ "id": newId, "fname": fName.value, "lname": lName.value })
+
+            let fullName = `<option id="${newId}">${lName.value}, ${fName.value}</option>`;
+
+            nameList.innerHTML = nameArray.map(name => `<option id="${name.id}">${name.lname}, ${name.fname}</option>`).join('');
+
+            fName.value = "";
+            lName.value = "";
+
+            updateButton.disabled = true;
+        }
+
+        nameList.addEventListener("click", activateUpdateButton)
+
+        function activateUpdateButton() {
+            let userValue = nameList.value
+
+            if (fName.value == "" || userValue == null || lName.value == "") updateButton.disabled = true;
+            else updateButton.disabled = false;
+        }
+
+        filterPrefix.addEventListener("input", filter)
+
+        function filter() {
+            let search = filterPrefix.value;
+
+            console.log(nameArray[0].lname.search(search) != -1);
+
+            for (let i = 0; i < nameArray.length; i++) {
+
+                if (search === "") {
+                    nameList.innerHTML = nameArray.map(name => `<option id="${name.id}">${name.lname}, ${name.fname}</option>`).join('');
+                }
+                else if (nameArray[i].lname.search(search) != -1) {
+                    console.log(nameArray[i]);
+                    let newId = nameArray[i].id;
+                    let newLName = nameArray[i].lname
+                    let newFName = nameArray[i].fname
+                    nameList.innerHTML = (`<option id="${newId}">${newLName}, ${newFName}</option>`)
+                }
+            }
         }
 
     </script>

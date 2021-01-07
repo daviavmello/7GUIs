@@ -112,7 +112,7 @@
             startDate.value != "" ? button.disabled = false : button.disabled = true;
 
             if(selectMenu.value == roundTrip.value ) {
-            if (returnDate.value === "" || startYear > returnYear || startYear === returnYear && startMonth > returnMonth || startYear === returnYear && startMonth === returnMonth && startDay > returnDay) return button.disabled = true;
+            if (startYear > returnYear || startYear === returnYear && startMonth > returnMonth || startYear === returnYear && startMonth === returnMonth && startDay > returnDay) return button.disabled = true;
             else return button.disabled = false;
             }
         }
@@ -127,12 +127,9 @@
             let returnYear = returnDate.value.substring(0, 4);
             let returnMonth = returnDate.value.substring(5, 7);
             let returnDay = returnDate.value.substring(8, 11)
-            
-            console.log(startDate.value.substring(8, 11));
-            console.log(returnDay);
 
             if(selectMenu.value == roundTrip.value ) {
-            if (returnDate.value === "" || startYear > returnYear || startYear === returnYear && startMonth > returnMonth || startYear === returnYear && startMonth === returnMonth && startDay > returnDay) return button.disabled = true;
+            if (startDate.value == "" || startYear > returnYear || startYear === returnYear && startMonth > returnMonth || startYear === returnYear && startMonth === returnMonth && startDay > returnDay) return button.disabled = true;
             else return button.disabled = false;
             }
         }
