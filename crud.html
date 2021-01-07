@@ -198,22 +198,21 @@
 
         function filter() {
             let search = filterPrefix.value;
-
-            console.log(nameArray[0].lname.search(search) != -1);
-
+            let filteredArray = []
+            
             for (let i = 0; i < nameArray.length; i++) {
+                // console.log(nameArray[i].lname.search(search) != -1);
 
-                if (search === "") {
-                    nameList.innerHTML = nameArray.map(name => `<option id="${name.id}">${name.lname}, ${name.fname}</option>`).join('');
-                }
-                else if (nameArray[i].lname.search(search) != -1) {
+                if (nameArray[i].lname.search(search) != -1) {
                     console.log(nameArray[i]);
                     let newId = nameArray[i].id;
                     let newLName = nameArray[i].lname
                     let newFName = nameArray[i].fname
-                    nameList.innerHTML = (`<option id="${newId}">${newLName}, ${newFName}</option>`)
+                    filteredArray.push({ "id": newId, "fname": newFName, "lname": newLName })
                 }
-            }
+            }       
+            nameList.innerHTML = filteredArray.map(name => `<option id="${name.id}">${name.lname}, ${name.fname}</option>`).join('');
+            console.log(filteredArray);
         }
 
     </script>
