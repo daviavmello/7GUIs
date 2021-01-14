@@ -157,6 +157,7 @@
 
         let circleArray = [];
         let deletedCircleArray = [];
+        let editCircleArray = [];
 
         const modal = document.getElementById("edit-circle")
         const modalContent = document.getElementById("circle-info")
@@ -203,8 +204,8 @@
 
         canvas.addEventListener("contextmenu", editCircle)
 
-        function editCircle(e) {
-            e.preventDefault()
+        function editCircle() {
+            event.preventDefault()
             console.log(`Right click`);
 
             let coordinates = getMousePos()
@@ -212,32 +213,40 @@
             let x = coordinates[0]
             let y = coordinates[1]
 
-            circleArray.find(circle => {
-                let distanceBetweenTwoPoints = Math.sqrt(Math.pow(Math.abs(circle.x - x), 2) + Math.pow(Math.abs(circle.y - y), 2))
-                console.log(distanceBetweenTwoPoints);
+            const circleSelected = circleArray.find(circle => {
+                const distanceBetweenTwoPoints = Math.sqrt(Math.pow(Math.abs(circle.x - x), 2) + Math.pow(Math.abs(circle.y - y), 2))
+
                 if (distanceBetweenTwoPoints <= 40) {
-
-                    console.log(circleArray);
+                    slider.value = circle.radius
                     console.log(`Circle selected: ${JSON.stringify(circle)}`);
-
-
                     modal.style.display = "flex"
                     modalContent.style.display = "flex"
                     modalContent.innerText = `Adjust diameter of circle at (${circle.x}, ${circle.y})`
 
-                    slider.addEventListener("mouseup", () => {
-                        circle.radius = parseInt(slider.value)
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        circleArray.map(circle => {
-                            ctx.beginPath();
-                            ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-                            ctx.strokeStyle = "#FFFFFF"
-                            ctx.stroke();
-                        })
-                    })
+                    editCircleArray.push(circle)
                 }
             })
         }
+
+        slider.addEventListener("change", function sliderHandler() {
+            const latestCircleEdited = editCircleArray[editCircleArray.length - 1]
+
+            console.log(editCircleArray);
+            latestCircleEdited.radius = parseInt(slider.value)
+
+            circleArray = circleArray.filter(circle => circle.id != latestCircleEdited.id)
+
+            console.log(circleArray);
+            circleArray.push(latestCircleEdited)
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            circleArray.forEach(circle => {
+                ctx.beginPath();
+                ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = "#FFFFFF"
+                ctx.stroke();
+
+            })
+        })
 
         closeModal.onclick = function () {
             modal.style.display = "none";
