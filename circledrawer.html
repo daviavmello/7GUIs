@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<head>
+    <title>7 GUI's</title>
+    <style>
+        *,
+        html {
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: rgb(236, 152, 42);
+        }
+
+        .center {
+            width: 100%;
+            height: 50%;
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: "Trebuchet MS", Helvetica, sans-serif;
+            text-align: center;
+        }
+
+        p {
+            font-size: 64px;
+        }
+
+        #circle-info {
+            display: none;
+            color: #222;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        #circle-canvas {
+            background-color: #222;
+            border-radius: 1.5rem;
+        }
+
+        #undo-button,
+        #redo-button {
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-size: 1.5rem;
+            margin: 1rem 2rem;
+            cursor: pointer;
+            background-color: white;
+        }
+
+        .modal {
+            display: none;
+            z-index: 1;
+            margin: 0 auto 2rem auto;
+            overflow: auto;
+            background-color: #fff;
+            -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+            -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+        }
+
+        #modal-content {
+            margin: 0 auto;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 0.5rem 0.5rem;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            outline: 0;
+            border: 0;
+            border-radius: 500px;
+            width: 400px;
+            max-width: 100%;
+            margin: 1.5rem 0;
+            transition: box-shadow 0.2s ease-in-out;
+
+            @media screen and (-webkit-min-device-pixel-ratio:0) {
+                & {
+                    overflow: hidden;
+                    height: 40px;
+                    -webkit-appearance: none;
+                    background-color: #ddd;
+                }
+
+                &::-webkit-slider-runnable-track {
+                    height: 40px;
+                    -webkit-appearance: none;
+                    color: #444;
+                    margin-top: -1px;
+                    transition: box-shadow 0.2s ease-in-out;
+                }
+
+                &::-webkit-slider-thumb {
+                    width: 40px;
+                    -webkit-appearance: none;
+                    height: 40px;
+                    cursor: ew-resize;
+                    background: #fff;
+                    box-shadow: -340px 0 0 320px #1597ff, inset 0 0 0 40px #1597ff;
+                    border-radius: 50%;
+                    position: relative;
+                    top: 1px;
+                }
+
+                &:active::-webkit-slider-thumb {
+                    background: #fff;
+                    box-shadow: -340px 0 0 320px #1597ff, inset 0 0 0 3px #1597ff;
+                }
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="center">
+        <div id="edit-circle" class="modal">
+            <div id="modal-content">
+                <h4 id="circle-info"></h4>
+                <span id="close-modal" class="close">&times;</span>
+                <input id="slider" type="range" min="0" max="100"></input>
+            </div>
+        </div>
+        <canvas id="circle-canvas" width="600" height="400" onclick="createCircle()">
+        </canvas>
+        <br>
+        <button disabled id="undo-button">Undo</button>
+        <button disabled id="redo-button">Redo</button>
+    </div>
+
+    <script>
+        // Task 6 = Circle Counter
+
+        let circleArray = [];
+        let deletedCircleArray = [];
+
+        const modal = document.getElementById("edit-circle")
+        const modalContent = document.getElementById("circle-info")
+        const closeModal = document.getElementById("close-modal")
+
+        const slider = document.getElementById("slider");
+
+        const undoButton = document.getElementById("undo-button")
+        const redoButton = document.getElementById("redo-button")
+
+        const canvas = document.getElementById("circle-canvas")
+        const ctx = canvas.getContext("2d")
+
+
+        function createCircle() {
+            let coordinates = getMousePos()
+
+            let x = coordinates[0]
+            let y = coordinates[1]
+            let radius = 40;
+            let id = `${x}.${y}`
+            let color = "#222222"
+
+            circleArray.push({ x, y, radius, id, color });
+
+            console.log(`New circle: ${JSON.stringify(circleArray)}`);
+
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = "#FFFFFF"
+            ctx.stroke();
+
+            if (circleArray.length > 0) undoButton.disabled = false;
+            else undoButton.disabled = true;
+        }
+
+        function getMousePos() {
+            let rect = canvas.getBoundingClientRect();
+            let x = event.clientX - rect.left;
+            let y = event.clientY - rect.top;
+
+            return [x, y];
+        }
+
+        canvas.addEventListener("contextmenu", editCircle)
+
+        function editCircle(e) {
+            e.preventDefault()
+            console.log(`Right click`);
+
+            let coordinates = getMousePos()
+
+            let x = coordinates[0]
+            let y = coordinates[1]
+
+            circleArray.find(circle => {
+                let distanceBetweenTwoPoints = Math.sqrt(Math.pow(Math.abs(circle.x - x), 2) + Math.pow(Math.abs(circle.y - y), 2))
+                console.log(distanceBetweenTwoPoints);
+                if (distanceBetweenTwoPoints <= 40) {
+
+                    console.log(circleArray);
+                    console.log(`Circle selected: ${JSON.stringify(circle)}`);
+
+
+                    modal.style.display = "flex"
+                    modalContent.style.display = "flex"
+                    modalContent.innerText = `Adjust diameter of circle at (${circle.x}, ${circle.y})`
+
+                    slider.addEventListener("mouseup", () => {
+                        circle.radius = parseInt(slider.value)
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        circleArray.map(circle => {
+                            ctx.beginPath();
+                            ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+                            ctx.strokeStyle = "#FFFFFF"
+                            ctx.stroke();
+                        })
+                    })
+                }
+            })
+        }
+
+        closeModal.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        undoButton.addEventListener("click", undo)
+
+        function undo() {
+            let lastItem = circleArray.length - 1;
+
+            deletedCircleArray.push(circleArray[lastItem])
+            circleArray.pop()
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            circleArray.map(circle => {
+
+                ctx.beginPath();
+                ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = "#FFFFFF"
+                ctx.stroke();
+            });
+
+            console.log(deletedCircleArray);
+
+            if (circleArray.length > 0) undoButton.disabled = false;
+            else undoButton.disabled = true;
+            if (deletedCircleArray.length > 0) redoButton.disabled = false;
+            else redoButton.disabled = true;
+        }
+
+        redoButton.addEventListener("click", redo)
+
+        function redo() {
+            let lastItem = deletedCircleArray.length - 1;
+
+            circleArray.push(deletedCircleArray[lastItem])
+            deletedCircleArray.pop();
+
+            circleArray.map(circle => {
+
+                ctx.beginPath();
+                ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = "#FFFFFF"
+                ctx.stroke();
+
+                if (circleArray.length > 0) undoButton.disabled = false;
+                else undoButton.disabled = true;
+                if (deletedCircleArray.length > 0) redoButton.disabled = false;
+                else redoButton.disabled = true;
+            });
+        }
+
+    </script>
+</body>
+
+</html>

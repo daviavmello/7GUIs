@@ -101,8 +101,6 @@
         function handleSlider() {
             let newSliderValue = slider.value;
 
-            console.log(slider.value);
-            console.log(timer);
             progressBar.value = slider.value;
             timer = slider.value * 1000;
             elapsedTime.innerHTML = `${slider.value}s`;
